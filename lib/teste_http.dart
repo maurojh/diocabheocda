@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:diocabheocda/viacep_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,6 +16,7 @@ class _TesteHttpState extends State<TesteHttp> {
   String rua = '';
   String cidade = '';
   String estado = '';
+  bool carregando = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +36,25 @@ class _TesteHttpState extends State<TesteHttp> {
                 onChanged: (String value) async {
                   var cep = value.trim().replaceAll('-', '');
                   if (cep.length == 8) {
+                    setState(() {
+                      carregando = true;
+                    });
                     print(value);
                     var response = await http.get(Uri.parse('https://viacep.com.br/ws/$cep/json/'));
-                    print(response.body);
-                    print(response.statusCode);
+                    var json = jsonDecode(response.body);
+                    var objetoViacep = ViacepModel.fromJson(json);
+                    setState(() {
+                      carregando = false;
+                      rua = objetoViacep.logradouro ?? '';
+                      cidade = objetoViacep.localidade ?? '';
+                      estado = objetoViacep.uf ?? '';
+                    }); 
                   } else {
                     setState(() {
                       rua = '';
                       cidade = '';
                       estado = '';
+                      carregando = false;
                     });
                   }
                 },
@@ -57,6 +71,10 @@ class _TesteHttpState extends State<TesteHttp> {
                 height: 50,
               ),
               Text('Estado: $estado'),
+              Visibility(
+                visible: carregando,
+                child: CircularProgressIndicator()
+              ),
             ],
           ),
         ),

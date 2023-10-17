@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:diocabheocda/viacep_model.dart';
+import 'package:diocabheocda/viacep_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,6 +18,8 @@ class _TesteHttpState extends State<TesteHttp> {
   String cidade = '';
   String estado = '';
   bool carregando = false;
+  ViacepModel objetoViacep =
+      ViacepModel(cep: '', logradouro: '', localidade: '', bairro: '', uf: '');
 
   @override
   Widget build(BuildContext context) {
@@ -39,21 +42,12 @@ class _TesteHttpState extends State<TesteHttp> {
                     setState(() {
                       carregando = true;
                     });
-                    print(value);
-                    var response = await http.get(Uri.parse('https://viacep.com.br/ws/$cep/json/'));
-                    var json = jsonDecode(response.body);
-                    var objetoViacep = ViacepModel.fromJson(json);
+                    objetoViacep = await ViacepRepository().consultarCEP(cep);
                     setState(() {
                       carregando = false;
-                      rua = objetoViacep.logradouro ?? '';
-                      cidade = objetoViacep.localidade ?? '';
-                      estado = objetoViacep.uf ?? '';
-                    }); 
+                    });
                   } else {
                     setState(() {
-                      rua = '';
-                      cidade = '';
-                      estado = '';
                       carregando = false;
                     });
                   }
@@ -62,19 +56,18 @@ class _TesteHttpState extends State<TesteHttp> {
               const SizedBox(
                 height: 50,
               ),
-              Text('Rua: $rua'),
+              Text('Rua: ${objetoViacep.logradouro ?? ''}'),
               const SizedBox(
                 height: 50,
               ),
-              Text('Cidade: $cidade'),
+              Text('Cidade: ${objetoViacep.localidade ?? ''}'),
               const SizedBox(
                 height: 50,
               ),
-              Text('Estado: $estado'),
+              Text('Estado: ${objetoViacep.uf ?? ''}'),
               Visibility(
-                visible: carregando,
-                child: CircularProgressIndicator()
-              ),
+                  visible: carregando,
+                  child: const CircularProgressIndicator()),
             ],
           ),
         ),

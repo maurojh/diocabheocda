@@ -1,12 +1,16 @@
 class ViacepModel {
-  String? cep;
-  String? logradouro;
-  String? bairro;
-  String? localidade;
-  String? uf;
+  String cep = '';
+  String logradouro = '';
+  String bairro = '';
+  String localidade = '';
+  String uf = '';
 
   ViacepModel(
-      {this.cep, this.logradouro, this.bairro, this.localidade, this.uf});
+      {required this.cep,
+      required this.logradouro,
+      required this.bairro,
+      required this.localidade,
+      required this.uf});
 
   ViacepModel.fromJson(Map<String, dynamic> json) {
     cep = json['cep'];
@@ -18,11 +22,11 @@ class ViacepModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['cep'] = this.cep;
-    data['logradouro'] = this.logradouro;
-    data['bairro'] = this.bairro;
-    data['localidade'] = this.localidade;
-    data['uf'] = this.uf;
+    data['cep'] = cep;
+    data['logradouro'] = logradouro;
+    data['bairro'] = bairro;
+    data['localidade'] = localidade;
+    data['uf'] = uf;
     return data;
   }
 }
